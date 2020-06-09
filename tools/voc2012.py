@@ -109,7 +109,7 @@ def main(_argv):
         try:
             tf_example = build_example(annotation, class_map)
         except:
-            print("跳过一个错误文件")
+            print("跳过一个错误文件",name)
         writer.write(tf_example.SerializeToString())
     writer.close()
     logging.info("Done")

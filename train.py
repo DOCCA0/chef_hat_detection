@@ -49,7 +49,7 @@ flags.DEFINE_integer('size', 416, 'image size')
 flags.DEFINE_integer('epochs', 2, 'number of epochs')
 flags.DEFINE_integer('batch_size', 2, 'batch size')
 flags.DEFINE_float('learning_rate', 1e-3, 'learning rate')
-flags.DEFINE_integer('num_classes', 4, 'number of classes in the model')
+flags.DEFINE_integer('num_classes', 3, 'number of classes in the model')
 flags.DEFINE_integer('weights_num_classes', 80, 'specify num class for `weights` file if different, '
                      'useful in transfer learning with different number of classes')
 

@@ -2,7 +2,9 @@ from absl import logging
 import numpy as np
 import tensorflow as tf
 import cv2
-
+import time
+import chefHatDetectionIns as data
+picpath=r"D:\projects\JAVA\chefhat_detection\src\main\pic\\"
 YOLOV3_LAYER_LIST = [
     'yolo_darknet',
     'yolo_conv_0',
@@ -21,6 +23,9 @@ YOLOV3_TINY_LAYER_LIST = [
     'yolo_output_1',
 ]
 
+# def changeVid_id(vidid):
+#     global vid_id
+#     vid_id=vidid
 
 def load_darknet_weights(model, weights_file, tiny=False):
     wf = open(weights_file, 'rb')
@@ -99,10 +104,11 @@ def broadcast_iou(box_1, box_2):
     return int_area / (box_1_area + box_2_area - int_area)
 
 
-def draw_outputs(img, outputs, class_names):
+def draw_outputs(isFirstPic,img, outputs, class_names):
     boxes, objectness, classes, nums = outputs
     boxes, objectness, classes, nums = boxes[0], objectness[0], classes[0], nums[0]
     wh = np.flip(img.shape[0:2])
+    nohat=False
     for i in range(nums):
         x1y1 = tuple((np.array(boxes[i][0:2]) * wh).astype(np.int32))
         x2y2 = tuple((np.array(boxes[i][2:4]) * wh).astype(np.int32))
@@ -110,7 +116,62 @@ def draw_outputs(img, outputs, class_names):
         img = cv2.putText(img, '{} {:.4f}'.format(
             class_names[int(classes[i])], objectness[i]),
             x1y1, cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 2)
+        if class_names[int(classes[i])]=="no hat":
+            nohat=True
+    if nohat and isFirstPic:
+        alarm=data.Alarm()
+        filename=str(time.time()).replace(".","")+".jpg"
+        print("没帽子")
+        cv2.imwrite(picpath+filename,img)
+        alarm.insert(1,"未戴厨师帽",filename)
+
+
+
+    # if nohat:
+        # connectMySql(Host,Port,User,Passwd,Db_,Charset)
+        # 查询有没有名字为vid_id的表
+        # global db
+        # global vid_id
+        # cursor=db.cursor()
+        # all_id = cursor.fetchall()  # fetchall方法返回所有匹配的元组，给出一个大元组（每个元素还是一个元组）
+        # 如果没有vid_id这个表
+        # print((vid_id,),all_id)
+        # if (vid_id,) not in all_id:
+        #     sql="CREATE TABLE {}(time datetime NOT NULL,picture mediumblob,PRIMARY KEY (time)) CHARSET=utf8".format(vid_id)
+        #     cursor.execute(sql)
+        #     db.commit()
+        # bytes_image=bytearray(img)
+        # # sql = 'INSERT INTO {} (time,picture) VALUES(now(),{})'.format(vid_id,bytes_image)
+        # sql = 'INSERT INTO {} (time) VALUES(now())'.format(vid_id)
+        # try:
+        #     cursor.execute(sql)
+        #     cursor.close()
+        #     db.commit()
+        # except:
+        #     pass
+        # db.close()
+        # cv2.imwrite(r"./no_hat/{}.jpg".format(int(time.time())),img)
+        # print(r"./no_hat/{}.jpg".format(int(time.time())))
     return img
+
+# def connectMySql(host,port,user,passwd,db_,charset):
+#     global Host
+#     global Port
+#     global User
+#     global Passwd
+#     global Db_
+#     global Charset
+#     Host=host
+#     Port=port
+#     User=user
+#     Passwd=passwd
+#     Charset=charset
+#     MySQLdb.connect(host=host,
+#                          port=port,
+#                          user=user,
+#                          passwd=passwd,
+#                          db=db_,
+#                          charset=charset)
 
 
 def draw_labels(x, y, class_names):

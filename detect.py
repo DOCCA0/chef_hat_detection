@@ -15,14 +15,14 @@ from yolov3_tf2.utils import draw_outputs
 
 
 flags.DEFINE_string('classes', './data/hats_voc2012.names', 'path to classes file')
-flags.DEFINE_string('weights', './checkpoints/yolov3_train_2.tf',
+flags.DEFINE_string('weights', './checkpoints/yolov3_train_10.tf',
                     'path to weights file')
 flags.DEFINE_boolean('tiny', False, 'yolov3 or yolov3-tiny')
 flags.DEFINE_integer('size', 416, 'resize images to')
-flags.DEFINE_string('image', './data/hats/000655.jpg', 'path to input image')
+flags.DEFINE_string('image', './data/hats/nohat2.jpg', 'path to input image')
 flags.DEFINE_string('tfrecord', None, 'tfrecord instead of image')
 flags.DEFINE_string('output', './output.jpg', 'path to output image')
-flags.DEFINE_integer('num_classes', 4, 'number of classes in the model')
+flags.DEFINE_integer('num_classes', 3, 'number of classes in the model')
 
 
 def main(_argv):
@@ -55,6 +55,7 @@ def main(_argv):
 
     t1 = time.time()
     boxes, scores, classes, nums = yolo(img)
+
     t2 = time.time()
     logging.info('time: {}'.format(t2 - t1))
 
@@ -76,7 +77,7 @@ if __name__ == '__main__':
     from tensorflow.compat.v1 import InteractiveSession
     from tensorflow.compat.v1 import GPUOptions
 
-    gpu_options = GPUOptions(per_process_gpu_memory_fraction=0.6)
+    gpu_options = GPUOptions(per_process_gpu_memory_fraction=0.5)
     config = ConfigProto(allow_soft_placement=True, gpu_options=gpu_options)
     config.gpu_options.allow_growth = True
     session = InteractiveSession(config=config)
